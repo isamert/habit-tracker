@@ -1,0 +1,8 @@
+{
+    "shell-version": ["3.22.2"], 
+    "description": "Track your habits in simple and beatiful way", 
+    "uuid": "habittracker@isamert.net", 
+    "name": "Habit Tracker",
+    "settings-schema": "org.gnome.shell.extensions.habittracker",
+    "gettext-domain": "habittracker"
+}

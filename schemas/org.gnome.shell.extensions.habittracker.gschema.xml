@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="habittracker">
+    <schema id="org.gnome.shell.extensions.habittracker" path="/org/gnome/shell/extensions/habittracker/">
+        <key name="label-text" type="s">
+            <default>'Habits'</default>
+            <summary>Label text</summary>
+            <description>The text shown on the label</description>
+        </key>
+
+        <key name="day-count" type="i">
+            <default>4</default>
+            <summary>Day count</summary>
+            <description>Total day count shown in the menu</description>
+        </key>
+    </schema>
+</schemalist>
+
+<!--
+    look here for more: https://raw.githubusercontent.com/paradoxxxzero/gnome-shell-system-monitor-applet/master/system-monitor@paradoxxx.zero.gmail.com/schemas/org.gnome.shell.extensions.system-monitor.gschema.xml
+-->
+<!--
+    Run this after changes:
+    glib-compile-schemas .
+-->

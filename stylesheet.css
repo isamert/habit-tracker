@@ -1,0 +1,38 @@
+.habittracker-check-button {
+    height: 18px;
+    width: 25px;
+    max-width: 25px;
+    padding: 0px;
+    border: 0px;
+}
+
+.habittracker-header-label {
+    font-weight: bold;
+}
+
+.habittracker-day-label {
+    width: 25px;
+    max-width: 25px;
+    font-size: 75%;
+    text-align: center;
+}
+
+.habittracker-iconbutton {
+    height: 18px;
+    width: 18px;
+    padding: 3px;
+    border: 0px;
+}
+
+.habittracker-entrysection {
+    padding: 6px 12px;
+}
+
+.habittracker-hintenry {
+    min-width: 15px;
+    margin: 6px 6px;
+}
+
+.habittracker-centeredlabel {
+    margin: 6px 6px;
+}

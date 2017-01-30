@@ -90,7 +90,7 @@ const HabitTracker = new Lang.Class({
         //
         // Add "Habits" header and + button
         //
-        let header = new PopupMenu.PopupSubMenuMenuItem(_('Habits'), false);
+        let header = new PopupMenu.PopupSubMenuMenuItem(_("Habits"), false);
         header.label.style_class = 'habittracker-header-label';
         header._triangle.visible = false; //FIXME: a little bit of hack here
         
@@ -121,15 +121,15 @@ const HabitTracker = new Lang.Class({
         // Create "new item" menu
         //
         let menu_item = new PopupMenu.PopupMenuSection();
-        let entry_name = new HintEntry(_('Name...'));
+        let entry_name = new HintEntry(_("Name..."));
         let entry_description = new HintEntry(_('Description...'));
         
         let box_repeat = new St.BoxLayout({ vertical: false });
-        let label_repeat_repeat = new CenteredLabel(_('Repeat'));
+        let label_repeat_repeat = new CenteredLabel(_("Repeat"));
         let label_repeat_times = new CenteredLabel(_('times in'));
         let label_repeat_days = new CenteredLabel(_('days.'));
-        let entry_repeat_times = new HintEntry(_('2'), true);
-        let entry_repeat_days = new HintEntry(_('7'), true);
+        let entry_repeat_times = new HintEntry(_("2"), true);
+        let entry_repeat_days = new HintEntry(_("7"), true);
 
         box_repeat.add(label_repeat_repeat);
         box_repeat.add(entry_repeat_times);
@@ -140,16 +140,23 @@ const HabitTracker = new Lang.Class({
 
         let show_time_picker = false;
         
-        let timepicker = new TimePicker(_('Hour'));
+        let timepicker = new TimePicker(_("Hour"));
         timepicker.visible = show_time_picker;
 
         let daypicker = new DayPicker();
         daypicker.visible = show_time_picker;
 
-        let switch_reminder = new SwitchBox(_('Reminder'), show_time_picker);
+        let switch_reminder = new SwitchBox(_("Reminder"), show_time_picker);
         switch_reminder.connect('toggled', Lang.bind(this, function(sender, state) {
             timepicker.visible = state;
             daypicker.visible = state;
+        }));
+
+        let button_save = new St.Button({label: _("Save")});
+        button_save.connect('clicked', Lang.bind(this, function(sender) {
+            let new_habit = new Habit();
+            new_habit.name = entry_name.get_text();
+            //...
         }));
 
         menu_item.actor.add_style_class_name('habittracker-entrysection');
@@ -159,6 +166,8 @@ const HabitTracker = new Lang.Class({
         menu_item.actor.add(switch_reminder);
         menu_item.actor.add(timepicker);
         menu_item.actor.add(daypicker);
+        menu_item.actor.add(button_save);
+
 
         header.menu.addMenuItem(menu_item);
 

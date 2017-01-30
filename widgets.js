@@ -110,10 +110,10 @@ const DayPicker = new Lang.Class({
 
     _init: function(text) {
         this.parent({vertical: true});
-        this.days = [_('Saturday'), _('Sunday'), _('Monday'), _('Tuesday'), 
-                     _('Wednesday'), _('Thursday'), _('Friday')];
+        this.days = [_("Saturday"), _("Sunday"), _("Monday"), _("Tuesday"), 
+                     _("Wednesday"), _("Thursday"), _("Friday")];
 
-        this.label = new CenteredLabel(_('Days'));
+        this.label = new CenteredLabel(_("Days"));
         this.add(this.label);
 
         this.days.forEach(function(day) {

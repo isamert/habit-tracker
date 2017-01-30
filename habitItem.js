@@ -139,7 +139,7 @@ const HabitItem = new Lang.Class({
         // Add menu items
         //
         let menu_item = new PopupMenu.PopupBaseMenuItem();
-        let label_overview = new St.Label({text: _('Overview')});
+        let label_overview = new St.Label({text: _("Overview")});
         menu_item.actor.add(label_overview, {expand: false, x_align: St.Align.MIDDLE});
         this.menu.addMenuItem(menu_item);
 

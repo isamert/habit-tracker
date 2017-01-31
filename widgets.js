@@ -74,6 +74,10 @@ const SwitchBox = new Lang.Class({
 
         this.add(this.label);
         this.add(this._statusBin, { expand: true, x_align: St.Align.END });
+    },
+
+    isActive: function() {
+        return this._active;
     }
 });
 
@@ -99,8 +103,8 @@ const TimePicker = new Lang.Class({
         this.add(this.entry_mins);
     },
 
-    getHour: function() {
-        //TODO: implement this
+    getTime: function() {
+        return this.entry_hour.get_text() + ':' + this.entry_mins.get_text();
     }
 });
 
@@ -110,20 +114,37 @@ const DayPicker = new Lang.Class({
 
     _init: function(text) {
         this.parent({vertical: true});
-        this.days = [_("Saturday"), _("Sunday"), _("Monday"), _("Tuesday"), 
-                     _("Wednesday"), _("Thursday"), _("Friday")];
+        this.days = {1: _("Saturday"), 
+                     2: _("Sunday"), 
+                     3: _("Monday"),
+                     4: _("Tuesday"), 
+                     5: _("Wednesday"),
+                     6: _("Thursday"),
+                     7: _("Friday")};
+        this._checkbox_days = [];
 
         this.label = new CenteredLabel(_("Days"));
         this.add(this.label);
 
-        this.days.forEach(function(day) {
-            let checkbox_day = new CheckBox(day);
+        for(let key in this.days) {
+            let checkbox_day = new CheckBox(this.days[key]);
+            checkbox_day.day = key;
+            
+            this._checkbox_days.push(checkbox_day);
             this.add(checkbox_day.actor);
-        }, this);
+        }
     },
 
-    getSelectedDays: function() {
-        //TODO: implement this
+    getDays: function() {
+        rdays = [];
+
+        this._checkbox_days.forEach(function(checkbox_day) {
+            if (checkbox_day.actor.get_checked()) {
+                rdays.push(parseInt(checkbox_day.day));
+            }
+        }, this);
+
+        return rdays;
     }
 });
 

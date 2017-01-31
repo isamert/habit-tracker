@@ -88,8 +88,8 @@ const HabitItem = new Lang.Class({
         // Icon
         //
         this.icon = new PercentageIcon(); // new St.Icon({ style_class: 'popup-menu-icon' });
-        this.icon.setProgress(0.50);
         this.actor.insert_child_at_index(this.icon.actor, 1);
+        this._updatePerformance();
 
 
         //
@@ -113,21 +113,8 @@ const HabitItem = new Lang.Class({
                 // we are 'day_no' away from today
                 let date = new Date();
                 date.setDate(date.getDate() - day_no);
-                
-                let contains = false;
-                let index = -1;
-                this.habit.days_done.forEach(function(done_date) {
-                    if(DateUtils.isSameDay(date, done_date)) {
-                        contains = true;
-                        index = this.habit.days_done.indexOf(done_date);
-                    }
-                }, this);
-
-                if (contains)
-                    this.habit.days_done.splice(index, 1);    
-                else
-                    this.habit.days_done.push(date);
-
+                this.habit.toggleDone(date);
+                this._updatePerformance();
                 this.emit('state-changed');
             }));
 
@@ -149,5 +136,9 @@ const HabitItem = new Lang.Class({
         this.menu.addMenuItem(menu_item2);
         icon.setProgress(0.70);
         icon.setIconSize(50);
+    },
+
+    _updatePerformance: function() {
+        this.icon.setProgress(this.habit.getPerformance());
     }
 });

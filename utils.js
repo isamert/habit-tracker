@@ -27,14 +27,9 @@ const FileUtils = {};
 
 const MILLI_SECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
-DateUtils.treatAsUTC = function () {
-    let result = new Date(date);
-    result.setMinutes(result.getMinutes() - result.getTimezoneOffset());
-    return result;
-};
 
 DateUtils.daysBetween = function (startDate, endDate) {
-    return (DateUtils.treatAsUTC(endDate) - DateUtils.treatAsUTC(startDate)) / MILLI_SECONDS_PER_DAY;
+    return Math.round(Math.abs((startDate.getTime() - endDate.getTime())/(MILLI_SECONDS_PER_DAY)));
 };
 
 DateUtils.isSameDay = function (date1, date2) {
@@ -51,7 +46,7 @@ DateUtils.dateReviver = function(key, value) {
     return value;
 };
 
-FileUtils.writeFile = function(file_path, text) {
+FileUtils.writeFile = function(file_path, text, write_finished_handler = null) {
     let file = Gio.File.new_for_path(file_path);
     file.replace_async(null, false,
         Gio.FileCreateFlags.REPLACE_DESTINATION,
@@ -62,6 +57,10 @@ FileUtils.writeFile = function(file_path, text) {
                 stream = file.replace_finish(res);
                 stream.write(text, null);
                 stream.close(null);
+            }
+
+            if (write_finished_handler != null) {
+                write_finished_handler();
             }
     });
 };

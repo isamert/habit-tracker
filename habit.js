@@ -58,10 +58,28 @@ const Habit = new Lang.Class({
     },
 
     getPerformance: function() {
-        return 0.70;
+        let days_between = DateUtils.daysBetween(this.create_date, new Date());
+        log("days_between:" + days_between);
+        let total = (days_between / this.repeat_day) * this.repeat;
+        log("total:" + total);
+        let done = this.days_done.length / total;
+        log("done:" + done);
+        return done;
     },
 
-    isDone: function(day) {
-        return 0.70;
+    toggleDone: function(date) {
+        let contains = false;
+        let index = -1;
+        this.days_done.forEach(function(done_date) {
+            if(DateUtils.isSameDay(date, done_date)) {
+                contains = true;
+                index = this.days_done.indexOf(done_date);
+            }
+        }, this);
+
+        if (contains)
+            this.days_done.splice(index, 1);    
+        else
+            this.days_done.push(date);
     }
 });

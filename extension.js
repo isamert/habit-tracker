@@ -51,15 +51,9 @@ const HabitTracker = new Lang.Class({
 
     _init: function() {
         this._settings = Convenience.getSettings();
-        this._settings.connect('changed', Lang.bind(this, this._loadSettings));
+        this._settings.connect('changed', Lang.bind(this, this._refresh));
 
         this._createContainer();
-        this._loadSettings();
-        this._stuff();
-    },
-
-    _stuff: function() {
-
     },
 
     _createContainer: function() {
@@ -76,14 +70,16 @@ const HabitTracker = new Lang.Class({
         this.container.actor.add_actor(hbox);
         this.container.actor.add_style_class_name('panel-status-button');
 
-        // this.container.actor.connect('button-press-event', Lang.bind(this, function() {
-        //     this._refresh();
-        // }));
+        this._refresh();
+        Main.panel.addToStatusArea('habitTracker', this.container);
+    },
 
+    _refresh: function() {
+        this.container.menu.removeAll();
         this._createHeader();
         this._loadHabits();
         this._createUtilityItems();
-        Main.panel.addToStatusArea('habitTracker', this.container);
+        this._loadSettings();
     },
 
     _createHeader: function() {
@@ -92,7 +88,7 @@ const HabitTracker = new Lang.Class({
         //
         let header = new PopupMenu.PopupSubMenuMenuItem(_("Habits"), false);
         header.label.style_class = 'habittracker-header-label';
-        header._triangle.visible = false; //FIXME: a little bit of hack here
+        header._triangle.visible = false;
         
 
         let button_new = new IconButton('list-add-symbolic');
@@ -122,12 +118,12 @@ const HabitTracker = new Lang.Class({
         //
         let menu_item = new PopupMenu.PopupMenuSection();
         let entry_name = new HintEntry(_("Name..."));
-        let entry_description = new HintEntry(_('Description...'));
+        let entry_description = new HintEntry(_("Description..."));
         
         let box_repeat = new St.BoxLayout({ vertical: false });
         let label_repeat_repeat = new CenteredLabel(_("Repeat"));
-        let label_repeat_times = new CenteredLabel(_('times in'));
-        let label_repeat_days = new CenteredLabel(_('days.'));
+        let label_repeat_times = new CenteredLabel(_("times in"));
+        let label_repeat_days = new CenteredLabel(_("days."));
         let entry_repeat_times = new HintEntry(_("2"), true);
         let entry_repeat_days = new HintEntry(_("7"), true);
 
@@ -152,11 +148,21 @@ const HabitTracker = new Lang.Class({
             daypicker.visible = state;
         }));
 
-        let button_save = new St.Button({label: _("Save")});
+        let button_save = new St.Button({label: _("Save"), style_class: 'panel-button'});
         button_save.connect('clicked', Lang.bind(this, function(sender) {
             let new_habit = new Habit();
             new_habit.name = entry_name.get_text();
-            //...
+            new_habit.description = entry_description.get_text();
+            new_habit.create_date = new Date();
+            new_habit.repeat = parseInt(entry_repeat_times.get_text());
+            new_habit.repeat_day = parseInt(entry_repeat_days.get_text());
+
+            if (switch_reminder.isActive()) {
+                new_habit.reminder_hour = timepicker.getTime();
+                new_habit.reminder_days = daypicker.getDays();
+            }
+
+            this._saveHabits(new_habit);
         }));
 
         menu_item.actor.add_style_class_name('habittracker-entrysection');
@@ -204,19 +210,35 @@ const HabitTracker = new Lang.Class({
                 let habit_item = new HabitItem(habit);
                 this._habit_items.push(habit_item);
                 habit_item.connect('state-changed', Lang.bind(this, function() {
-   
-                    let json_arr = [];
-                    this._habit_items.forEach(function(element) {
-                        json_arr.push(element.habit);
-                    }, this);
-
-                    FileUtils.writeFile('/home/isa/Workspace/HABBIT.json', JSON.stringify(json_arr));
+                    this._saveHabits();
                 }));
 
                 this.container.menu.addMenuItem(habit_item, 2); // 1 header + 1 seperator = 2
             }, this);
         }));
         this._addMenuSeperator();
+    },
+
+    _getHabits: function() {
+        let habits = [];
+        for (let habit_item of this._habit_items)
+            habits.push(habit_item.habit);
+        return habits;
+    },
+
+    _saveHabits: function(new_habit = null) {
+        let json_arr = [];
+        for (let habit of this._getHabits())
+            json_arr.push(habit);
+
+        let add_new = new_habit != null;
+        if (add_new)
+            json_arr.push(new_habit);
+        
+        FileUtils.writeFile('/home/isa/Workspace/HABBIT.json', JSON.stringify(json_arr), Lang.bind(this, function() {
+            if (add_new)
+                this._refresh();
+        }));
     },
 
     _addMenuSeperator: function() {

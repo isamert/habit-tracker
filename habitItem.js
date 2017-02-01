@@ -32,7 +32,6 @@ const ExtensionSystem = imports.ui.extensionSystem;
 const ExtensionUtils = imports.misc.extensionUtils;
 
 const Me = ExtensionUtils.getCurrentExtension();
-const Convenience = Me.imports.convenience;
 const PercentageIcon = Me.imports.widgets.PercentageIcon;
 const FileUtils = Me.imports.utils.FileUtils;
 const DateUtils = Me.imports.utils.DateUtils;
@@ -42,6 +41,7 @@ const DayCheckButton = new Lang.Class({
     Name: 'DayCheckButton',
     Extends: St.Button,
     done: false,
+    date: null,
     _icon_names: {done: 'object-select-symbolic', undone: 'window-close-symbolic'},
     //Signals: { 'done-state-changed': { param_types: [ GObject.TYPE_BOOLEAN ] } },
 
@@ -78,16 +78,14 @@ const HabitItem = new Lang.Class({
     Extends: PopupMenu.PopupSubMenuMenuItem,
     Signals: { 'state-changed': { } },
 
-    _init: function(habit) {
+    _init: function(habit, day_count) {
         this.parent(habit.name, false);
         this.habit = habit;
-
-        this._settings = Convenience.getSettings();
 
         //
         // Icon
         //
-        this.icon = new PercentageIcon(); // new St.Icon({ style_class: 'popup-menu-icon' });
+        this.icon = new PercentageIcon();
         this.actor.insert_child_at_index(this.icon.actor, 1);
         this._updatePerformance();
 
@@ -95,27 +93,34 @@ const HabitItem = new Lang.Class({
         //
         // Load days
         //
-        let day_count = this._settings.get_int('day-count');
         for (let i = 0; i < day_count; ++i) {
             let day_no = i;
             let day_check_button = new DayCheckButton();
 
-            let d = new Date();
-            d.setDate(d.getDate() - day_no);
+            let date = new Date();
+            date.setDate(date.getDate() - day_no);
+
+            day_check_button.date = date;
+
             this.habit.days_done.forEach(function(done_date) {
-                if (DateUtils.isSameDay(d, done_date)) {
+                if (DateUtils.isSameDay(date, done_date)) {
                     day_check_button.setDone();
                 }
             }, this);
 
 
             day_check_button.connect('clicked', Lang.bind(this, function() {
-                // we are 'day_no' away from today
-                let date = new Date();
-                date.setDate(date.getDate() - day_no);
-                this.habit.toggleDone(date);
-                this._updatePerformance();
-                this.emit('state-changed');
+                if (this._isBeforeCreateDate(day_check_button)) {
+                    //TODO: show tooltip
+                    let tooltip = new St.Tooltip();
+                } else {
+                    // we are 'day_no' away from today
+                    let date = new Date();
+                    date.setDate(date.getDate() - day_no);
+                    this.habit.toggleDone(date);
+                    this._updatePerformance();
+                    this.emit('state-changed');
+                }
             }));
 
             this.actor.add(day_check_button, {expand: false, x_align: St.Align.MIDDLE});
@@ -140,5 +145,13 @@ const HabitItem = new Lang.Class({
 
     _updatePerformance: function() {
         this.icon.setProgress(this.habit.getPerformance());
+    },
+
+    _isBeforeCreateDate: function(day_check_button) {
+        if (!DateUtils.isSameDay(day_check_button.date, this.habit.create_date) &&
+            date < this.habit.create_date) {
+                return true;
+            }
+        return false;
     }
 });

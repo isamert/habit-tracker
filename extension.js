@@ -48,6 +48,7 @@ const DateUtils = Me.imports.utils.DateUtils;
 const HabitTracker = new Lang.Class({
     Name: 'HabitTracker',
     _habit_items: [],
+    day_count: 5,
 
     _init: function() {
         this._settings = Convenience.getSettings();
@@ -75,6 +76,7 @@ const HabitTracker = new Lang.Class({
     },
 
     _refresh: function() {
+        this._habit_items = [];
         this.container.menu.removeAll();
         this._createHeader();
         this._loadHabits();
@@ -101,11 +103,10 @@ const HabitTracker = new Lang.Class({
         //
         // Add days to header
         //
-        let date = new Date();
-
-        let day_count = this._settings.get_int('day-count');
-        for (let i = 0; i < day_count; ++i) {
-            date.setDate(date.getDate() - 1); // Go back 1 day everytime
+        this.day_count = this._settings.get_int('day-count');
+        for (let i = 0; i < this.day_count; ++i) {
+            let date = new Date();
+            date.setDate(date.getDate() - i);
 
             let day_text = date.toLocaleFormat('%a').toUpperCase() + '\n' + date.getUTCDate();
             let day_label = new St.Label({text: day_text, style_class: 'habittracker-day-label'});
@@ -207,7 +208,7 @@ const HabitTracker = new Lang.Class({
                 let habit = new Habit();
                 habit.fromObj(habit_json);
 
-                let habit_item = new HabitItem(habit);
+                let habit_item = new HabitItem(habit, this.day_count);
                 this._habit_items.push(habit_item);
                 habit_item.connect('state-changed', Lang.bind(this, function() {
                     this._saveHabits();

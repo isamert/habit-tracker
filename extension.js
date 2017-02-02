@@ -247,7 +247,7 @@ const HabitTracker = new Lang.Class({
         this.container.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
     },
 
-    destroy: function() {
+    destroy: function () {
         this.container.destroy();
     }
 });

@@ -78,5 +78,9 @@ const Habit = new Lang.Class({
             this.days_done.splice(index, 1);    
         else
             this.days_done.push(date);
+    },
+
+    scheduleNotifications: function() {
+        
     }
 });

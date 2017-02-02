@@ -114,13 +114,13 @@ const DayPicker = new Lang.Class({
 
     _init: function(text) {
         this.parent({vertical: true});
-        this.days = {1: _("Saturday"), 
-                     2: _("Sunday"), 
-                     3: _("Monday"),
-                     4: _("Tuesday"), 
-                     5: _("Wednesday"),
-                     6: _("Thursday"),
-                     7: _("Friday")};
+        this.days = {0: _("Sunday"), 
+                     1: _("Monday"),
+                     2: _("Tuesday"), 
+                     3: _("Wednesday"),
+                     4: _("Thursday"),
+                     5: _("Friday"),
+                     6: _("Saturday")}; // According to this: http://www.w3schools.com/jsref/jsref_getday.asp
         this._checkbox_days = [];
 
         this.label = new CenteredLabel(_("Days"));

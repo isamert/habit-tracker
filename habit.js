@@ -59,11 +59,8 @@ const Habit = new Lang.Class({
 
     getPerformance: function() {
         let days_between = DateUtils.daysBetween(this.create_date, new Date());
-        log("days_between:" + days_between);
         let total = (days_between / this.repeat_day) * this.repeat;
-        log("total:" + total);
         let done = this.days_done.length / total;
-        log("done:" + done);
         return done;
     },
 

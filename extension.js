@@ -44,6 +44,7 @@ const DayPicker = Me.imports.widgets.DayPicker;
 const SwitchBox = Me.imports.widgets.SwitchBox;
 const FileUtils = Me.imports.utils.FileUtils;
 const DateUtils = Me.imports.utils.DateUtils;
+const HabitTrackerUtils = Me.imports.utils.HabitTrackerUtils;
 
 const HabitTracker = new Lang.Class({
     Name: 'HabitTracker',
@@ -202,7 +203,7 @@ const HabitTracker = new Lang.Class({
     },
 
     _loadHabits: function() {
-        FileUtils.readFile('/home/isa/Workspace/HABBIT.json', Lang.bind(this, function(contents) {
+        FileUtils.readFile(HabitTrackerUtils.storageFile(), Lang.bind(this, function(contents) {
             let habit_list = JSON.parse(contents, DateUtils.dateReviver);
             habit_list.forEach(function(habit_json) {
                 let habit = new Habit();
@@ -223,7 +224,7 @@ const HabitTracker = new Lang.Class({
     _getHabits: function() {
         let habits = [];
         for (let habit_item of this._habit_items)
-            habits.push(habit_item.habit);
+            habits.push(habit_item.habit); //FIXME: I couldn't use yield because I don't know how to use with gjs.
         return habits;
     },
 
@@ -236,7 +237,7 @@ const HabitTracker = new Lang.Class({
         if (add_new)
             json_arr.push(new_habit);
         
-        FileUtils.writeFile('/home/isa/Workspace/HABBIT.json', JSON.stringify(json_arr), Lang.bind(this, function() {
+        FileUtils.writeFile(HabitTrackerUtils.storageFile(), JSON.stringify(json_arr), Lang.bind(this, function() {
             if (add_new)
                 this._refresh();
         }));

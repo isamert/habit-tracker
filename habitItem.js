@@ -43,7 +43,8 @@ const DayCheckButton = new Lang.Class({
     done: false,
     date: null,
     _icon_names: {done: 'object-select-symbolic', undone: 'window-close-symbolic'},
-    //Signals: { 'done-state-changed': { param_types: [ GObject.TYPE_BOOLEAN ] } },
+    _disabled_toggle: false,
+    Signals: { 'done-state-changed': { } },
 
 
     _init: function() {
@@ -59,17 +60,23 @@ const DayCheckButton = new Lang.Class({
     },
 
     setDone: function() {
-        if (this.done) {
-            this.done = false;
-            this.child.icon_name = this._icon_names.undone;
-        } else {
-            this.done = true;
-            this.child.icon_name = this._icon_names.done;
+        //FIXME: this func gets called at startup
+        this.emit('done-state-changed');
+
+        if (!this._disabled_toggle) {
+            if (this.done) {
+                this.done = false;
+                this.child.icon_name = this._icon_names.undone;
+            } else {
+                this.done = true;
+                this.child.icon_name = this._icon_names.done;
+            }
         }
-        
-        //this.emit('done-state-changed', this.done);
     },
 
+    setDisableToggle: function(toggle) {
+        this._disabled_toggle = toggle;
+    }
 });
 
 
@@ -109,11 +116,13 @@ const HabitItem = new Lang.Class({
             }, this);
 
 
-            day_check_button.connect('clicked', Lang.bind(this, function() {
+            day_check_button.connect('done-state-changed', Lang.bind(this, function() {
                 if (this._isBeforeCreateDate(day_check_button)) {
+                    day_check_button.setDisableToggle(true);
                     //TODO: show tooltip
-                    let tooltip = new St.Tooltip();
                 } else {
+                    day_check_button.setDisableToggle(false);
+
                     // we are 'day_no' away from today
                     let date = new Date();
                     date.setDate(date.getDate() - day_no);
@@ -149,7 +158,7 @@ const HabitItem = new Lang.Class({
 
     _isBeforeCreateDate: function(day_check_button) {
         if (!DateUtils.isSameDay(day_check_button.date, this.habit.create_date) &&
-            date < this.habit.create_date) {
+            day_check_button.date < this.habit.create_date) {
                 return true;
             }
         return false;

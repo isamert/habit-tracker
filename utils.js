@@ -24,6 +24,7 @@ const GLib = imports.gi.GLib;
 
 const DateUtils = {};
 const FileUtils = {};
+const HabitTrackerUtils = {};
 
 const MILLI_SECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
@@ -78,3 +79,14 @@ FileUtils.readFile = function(file_path, read_finished_handler) {
         }
     });
 };
+
+HabitTrackerUtils.storagePath = function() {
+    let path = GLib.get_user_data_dir() + '/habit-tracker';
+    GLib.mkdir_with_parents(path, 0755);
+    return path;
+}
+
+HabitTrackerUtils.storageFile = function() {
+    let path = HabitTrackerUtils.storagePath() + '/' + 'habits.json';
+    return path;
+}

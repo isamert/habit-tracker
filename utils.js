@@ -47,6 +47,22 @@ DateUtils.dateReviver = function(key, value) {
     return value;
 };
 
+// According to this: http://www.w3schools.com/jsref/jsref_getday.asp
+DateUtils.weekDays = {0: _("Sunday"), 
+                      1: _("Monday"),
+                      2: _("Tuesday"), 
+                      3: _("Wednesday"),
+                      4: _("Thursday"),
+                      5: _("Friday"),
+                      6: _("Saturday")};
+
+DateUtils.nextDay = function(now, dow) {
+    let return_date = new Date();
+    return_date.setDate(now.getDate() + (dow+(7-now.getDay())) % 7);
+    return return_date;
+};
+
+
 FileUtils.writeFile = function(file_path, text, write_finished_handler = null) {
     let file = Gio.File.new_for_path(file_path);
     file.replace_async(null, false,
@@ -82,7 +98,7 @@ FileUtils.readFile = function(file_path, read_finished_handler) {
 
 HabitTrackerUtils.storagePath = function() {
     let path = GLib.get_user_data_dir() + '/habit-tracker';
-    GLib.mkdir_with_parents(path, 0755);
+    GLib.mkdir_with_parents(path, "0755");
     return path;
 }
 

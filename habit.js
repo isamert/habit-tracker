@@ -81,6 +81,19 @@ const Habit = new Lang.Class({
     },
 
     scheduleNotifications: function() {
-        
+        let notify = this.reminder_days.length > 0;
+        if (!notify)
+            return;
+
+        let now = new Date();
+        for (let day_no of this.reminder_days) {
+            if (day_no > now.getDay()) {   
+                let millisTillNextNotif = DateUtils.nextDay(now, day_no) - now;
+                setTimeout(Lang.bind(this, function(){
+                    Main.notify(this.name, this.description);
+                    //...
+                }), millisTillNextNotif);
+            }
+        }
     }
 });

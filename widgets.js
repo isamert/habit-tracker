@@ -34,6 +34,10 @@ const St = imports.gi.St;
 const PopupMenu = imports.ui.popupMenu;
 const CheckBox = imports.ui.checkBox.CheckBox;
 
+const ExtensionUtils = imports.misc.extensionUtils;
+const Me = ExtensionUtils.getCurrentExtension();
+const DateUtils = Me.imports.utils.DateUtils;
+
 const FADE_OUT_OPACITY = 0.38;
 const ICON_SIZE = 22;
 
@@ -114,20 +118,13 @@ const DayPicker = new Lang.Class({
 
     _init: function(text) {
         this.parent({vertical: true});
-        this.days = {0: _("Sunday"), 
-                     1: _("Monday"),
-                     2: _("Tuesday"), 
-                     3: _("Wednesday"),
-                     4: _("Thursday"),
-                     5: _("Friday"),
-                     6: _("Saturday")}; // According to this: http://www.w3schools.com/jsref/jsref_getday.asp
         this._checkbox_days = [];
 
         this.label = new CenteredLabel(_("Days"));
         this.add(this.label);
 
-        for(let key in this.days) {
-            let checkbox_day = new CheckBox(this.days[key]);
+        for(let key in DateUtils.weekDays) {
+            let checkbox_day = new CheckBox(DateUtils.weekDays[key]);
             checkbox_day.day = key;
             
             this._checkbox_days.push(checkbox_day);
